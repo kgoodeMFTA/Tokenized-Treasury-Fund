@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Tokenized Treasury Fund — Transparency Dashboard</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #0b0f17;
+    --panel: #131a26;
+    --text: #e6edf7;
+    --muted: #8a98ad;
+    --accent: #5cc8ff;
+    --accent2: #7ef0a8;
+    --border: #1f2a3d;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
+    background: var(--bg); color: var(--text); line-height: 1.55;
+  }
+  header {
+    padding: 32px 40px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+  header h1 { margin: 0 0 6px; font-size: 22px; letter-spacing: 0.2px; }
+  header p { margin: 0; color: var(--muted); font-size: 13px; }
+  .badge {
+    display: inline-block; padding: 2px 8px; border: 1px solid var(--border);
+    border-radius: 999px; font-size: 11px; color: var(--accent);
+    margin-left: 8px; vertical-align: middle;
+  }
+  main { padding: 32px 40px; max-width: 1200px; margin: 0 auto; }
+  .grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 28px;
+  }
+  .card {
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: 12px; padding: 18px;
+  }
+  .card .label { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.6px; }
+  .card .value { font-size: 24px; margin-top: 6px; font-weight: 600; }
+  .card .sub { color: var(--muted); font-size: 12px; margin-top: 4px; }
+  .row { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; margin-bottom: 28px; }
+  @media (max-width: 900px) { .grid { grid-template-columns: repeat(2, 1fr); } .row { grid-template-columns: 1fr; } }
+  .panel {
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: 12px; padding: 18px;
+  }
+  .panel h3 { margin: 0 0 12px; font-size: 14px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.6px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { text-align: left; padding: 10px 8px; border-bottom: 1px solid var(--border); }
+  th { color: var(--muted); font-weight: 500; }
+  td.num { text-align: right; font-variant-numeric: tabular-nums; }
+  .ok { color: var(--accent2); }
+  .warn { color: #ffcc66; }
+  footer { color: var(--muted); font-size: 12px; padding: 20px 40px; border-top: 1px solid var(--border); }
+  a { color: var(--accent); text-decoration: none; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Tokenized Treasury Fund <span class="badge">TTF · DEMO</span></h1>
+  <p>Live-style transparency dashboard — simulated 30-day fund lifecycle for portfolio demonstration.</p>
+</header>
+
+<main>
+  <section class="grid">
+    <div class="card">
+      <div class="label">AUM (USD)</div>
+      <div class="value" id="aum">$2.51M</div>
+      <div class="sub">Net of redemptions</div>
+    </div>
+    <div class="card">
+      <div class="label">NAV / share</div>
+      <div class="value" id="nav">1.00360</div>
+      <div class="sub">Day 30, updated 4:00pm ET</div>
+    </div>
+    <div class="card">
+      <div class="label">Net yield (annualised)</div>
+      <div class="value" id="yield">4.42%</div>
+      <div class="sub">12 bps / day daily distribution</div>
+    </div>
+    <div class="card">
+      <div class="label">Whitelisted holders</div>
+      <div class="value" id="holders">3</div>
+      <div class="sub">All Reg D 506(c) QP / institutional</div>
+    </div>
+  </section>
+
+  <section class="row">
+    <div class="panel">
+      <h3>NAV per share — 30-day series</h3>
+      <canvas id="navChart" height="120"></canvas>
+    </div>
+    <div class="panel">
+      <h3>Cap table (live)</h3>
+      <table>
+        <thead><tr><th>Holder</th><th class="num">Shares</th><th class="num">% supply</th></tr></thead>
+        <tbody id="captable"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="row">
+    <div class="panel">
+      <h3>Daily yield distribution (bps)</h3>
+      <canvas id="yieldChart" height="120"></canvas>
+    </div>
+    <div class="panel">
+      <h3>Compliance posture</h3>
+      <table>
+        <tbody>
+          <tr><td>Sanctions screening</td><td class="num ok">Up to date</td></tr>
+          <tr><td>KYC freshness</td><td class="num ok">All holders &lt; 12mo</td></tr>
+          <tr><td>NAV staleness</td><td class="num ok">2h 14m</td></tr>
+          <tr><td>Proof-of-Reserve</td><td class="num ok">Attested today</td></tr>
+          <tr><td>Cap-table recon vs TA</td><td class="num ok">0 variance</td></tr>
+          <tr><td>Pause state</td><td class="num ok">Active (unpaused)</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="panel" style="margin-bottom: 28px;">
+    <h3>Recent events</h3>
+    <table>
+      <thead>
+        <tr><th>Block</th><th>Event</th><th>Detail</th><th class="num">Value</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>—</td><td>YieldDistributed</td><td>12 bps to distributor</td><td class="num">+300.43 TTF</td></tr>
+        <tr><td>—</td><td>NavUpdated</td><td>1.00348 → 1.00360</td><td class="num">+0.012%</td></tr>
+        <tr><td>—</td><td>Redeemed</td><td>Bob (institutional, SG)</td><td class="num">−500,000 TTF</td></tr>
+        <tr><td>—</td><td>Subscribed</td><td>Bob (institutional, SG)</td><td class="num">+2,000,000 TTF</td></tr>
+        <tr><td>—</td><td>Subscribed</td><td>Alice (QP, US)</td><td class="num">+500,000 TTF</td></tr>
+        <tr><td>—</td><td>InvestorRegistered</td><td>Alice — Reg D QP</td><td class="num">tier 3</td></tr>
+      </tbody>
+    </table>
+  </section>
+</main>
+
+<footer>
+  Portfolio reference implementation. Not a real fund. Not investment advice. Mechanics modeled on BlackRock BUIDL, Ondo OUSG, Franklin BENJI, and Superstate USTB as documented in <code>docs/06-market-context.md</code>.
+</footer>
+
+<script>
+  // Synthetic 30-day series matching scripts/simulate-lifecycle.js
+  const days = Array.from({length: 30}, (_, i) => "Day " + (i + 1));
+  const nav = [];
+  let n = 1.0;
+  for (let i = 0; i < 30; i++) { n += 0.00012; nav.push(+n.toFixed(5)); }
+  const yields = Array.from({length: 30}, () => 12);
+
+  new Chart(document.getElementById("navChart"), {
+    type: "line",
+    data: {
+      labels: days,
+      datasets: [{
+        label: "NAV / share",
+        data: nav,
+        borderColor: "#5cc8ff",
+        backgroundColor: "rgba(92,200,255,0.12)",
+        tension: 0.25, fill: true, pointRadius: 0, borderWidth: 2
+      }]
+    },
+    options: {
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { ticks: { color: "#8a98ad", maxTicksLimit: 8 }, grid: { color: "#1f2a3d" } },
+        y: { ticks: { color: "#8a98ad" }, grid: { color: "#1f2a3d" } }
+      }
+    }
+  });
+
+  new Chart(document.getElementById("yieldChart"), {
+    type: "bar",
+    data: {
+      labels: days,
+      datasets: [{
+        label: "bps",
+        data: yields,
+        backgroundColor: "#7ef0a8"
+      }]
+    },
+    options: {
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { ticks: { color: "#8a98ad", maxTicksLimit: 8 }, grid: { color: "#1f2a3d" } },
+        y: { ticks: { color: "#8a98ad" }, grid: { color: "#1f2a3d" } }
+      }
+    }
+  });
+
+  const cap = [
+    { name: "Alice (US, QP)",       shares: 501803, },
+    { name: "Bob (SG, Institutional)", shares: 1505420, },
+    { name: "Distributor pool",     shares: 9012, }
+  ];
+  const total = cap.reduce((a, b) => a + b.shares, 0);
+  document.getElementById("captable").innerHTML = cap.map(r => `
+    <tr><td>${r.name}</td><td class="num">${r.shares.toLocaleString()}</td>
+    <td class="num">${(100 * r.shares / total).toFixed(2)}%</td></tr>
+  `).join("");
+</script>
+</body>
+</html>

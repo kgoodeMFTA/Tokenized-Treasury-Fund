@@ -97,37 +97,7 @@ Day 30 NAV/share              = 1.00360
 Day 30 Total supply           = 2,082,507 TTF (incl. yield)
 ```
 
-## Business-analyst artifacts
 
-These are the documents I would deliver in week 1 of a real engagement:
-
-- **[Business Requirements Document](docs/01-business-requirements.md)** — Objectives, scope, stakeholders, 12 functional + 6 non-functional requirements, acceptance criteria.
-- **[Compliance Control Matrix](docs/02-compliance-matrix.md)** — 15 controls mapped across regulation → control → layer → evidence → owner.
-- **[Data Model](docs/03-data-model.md)** — Conceptual model, logical entities, key events, cap-table reconciliation query.
-- **[Process Flows](docs/04-process-flows.md)** — 6 Mermaid sequence diagrams: onboarding, subscribe, NAV/yield, redeem, incident response, sanctions hit.
-- **[User Stories](docs/05-user-stories.md)** — Stories with Given/When/Then acceptance + traceability matrix linking story → FR → test.
-- **[Market Context](docs/06-market-context.md)** — May 2026 competitive snapshot with sources.
-
-## Skills demonstrated
-
-| Skill | Evidence |
-|---|---|
-| Tokenization product mechanics | `TokenizedTreasuryFund.sol` implements the BUIDL pattern end-to-end |
-| Regulatory framework | `02-compliance-matrix.md` covers Reg D, Reg S, OFAC, FinCEN, 1940 Act, FINRA |
-| Business analysis | BRD with traceable FRs → user stories → tests |
-| Solidity development | OpenZeppelin AccessControl + Pausable, custom errors, role separation |
-| Process modelling | 6 Mermaid sequence diagrams across the fund lifecycle |
-| Data modelling | Conceptual + logical model, reconciliation queries |
-| Risk management | Defence-in-depth control mapping, incident-response playbook |
-| Six Sigma mindset | Variance targets in NFRs (e.g., 0 cap-table variance, ≥90% test coverage) |
-
-## What I'd build next (v2 roadmap)
-
-1. **Secondary market** — integration with a permissioned ATS (Securitize Markets pattern).
-2. **ERC-3643 (T-REX) variant** — swap the registry implementation; demonstrate Tokeny's identity-attached compliance model.
-3. **Multi-chain mirror** — canonical registry stays on Ethereum, mirror on an L2 with bridge-aware compliance.
-4. **Chainlink Proof of Reserve integration** — replace mocked oracle role with real PoR feed.
-5. **Subgraph + Dune dashboard** — replace the static HTML dashboard with on-chain-indexed live data.
 
 ## License
 

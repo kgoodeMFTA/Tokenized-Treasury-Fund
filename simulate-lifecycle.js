@@ -1,7 +1,6 @@
 /**
- * Simulates a 30-day fund lifecycle so a recruiter (or you in an interview) can
- * see the BUIDL-style mechanics end-to-end:
- *
+ 
+ 
  *   Day 0  - register investors (QP whitelist)
  *   Day 1  - investors subscribe via the transfer agent
  *   Days 1-30 - oracle posts daily NAV + 12bps daily yield (~4.4% APY)
